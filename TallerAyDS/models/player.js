@@ -27,7 +27,7 @@ var PlayerSchema = new Schema({
   }
 });
 
-var Player = mongoose.model('Player', PlayerSchema);
+var PlayerModel = mongoose.model('Player', PlayerSchema);
 
 function Player(name) {
   /*

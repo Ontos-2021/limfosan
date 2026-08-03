@@ -30,7 +30,7 @@ var GameSchema = new Schema({
 	score:        { type : Object , default : [0,0] },
 });
 
-var Game = mongoose.model('Game', GameSchema);
+var GameModel = mongoose.model('Game', GameSchema);
 
 
 

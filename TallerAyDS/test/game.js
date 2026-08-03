@@ -20,9 +20,8 @@ describe('Game', function(){
 describe('Game#play', function(){
   var game;
   beforeEach(function(){
-    game = new Game({ currentHand: 'player1' });
-    game.player1 = new Player({ nickname: 'J' });
-    game.player2 = new Player({ nickname: 'X' });
+    game = new Game(new Player('J'), new Player('X'));
+    game.currentHand = 'player1';
     game.newRound();
     /*
     // Force to have the following cards and envidoPoints
@@ -39,28 +38,13 @@ describe('Game#play', function(){
     ]);
         */
   });
-    it('should save a game', function(done){
-    var game = new Game({ currentHand: 'player1' });
-    player1 = new Player({ nickname: 'J' });
-    player2 = new Player({ nickname: 'X' });
-
-    player1.save(function(err, player1) {
-      if(err)
-        done(err)
-      game.player1 = player1;
-      player2.save(function(err, player2) {
-        if(err)
-            done(err)
-        game.player2 = player2;
-        game.save(function(err, model){
-          if(err)
-            done(err)
-            expect(model.player1.nickname).to.be.eq('J');
-            expect(model.player2.nickname).to.be.eq('X');
-            done();
-            });
-        })
-    });
+    it('should create a game with two players', function(){
+      var player1 = new Player('J');
+      var player2 = new Player('X');
+      var game = new Game(player1, player2);
+      expect(game.player1).to.equal(player1);
+      expect(game.player2).to.equal(player2);
+      expect(game.score).to.deep.equal([0, 0]);
     });
 
 /*

@@ -104,22 +104,12 @@ router.get('/logout', function(req, res) {
 // ROUTER GET / POST NEW GAME , IT'S WORKING. :)))))))
 router.get('/newgame', function(req,res){  
 	User.findOne({username: req.body.username},function(err,user) {	
-		console.log(user.username);
+		if (!err && user) { console.log(user.username); }
 	});
-	var player = new Player({
-					pl: { type: req.body._id },
-					username: req.user.username
-					});	
-	player.save(function(err) {
-	if(err) {
-		res.send("ERROR");
-	}else{
-		res.send("VAMOS!");
-	}
-	});
-	//var p1 = new Player(req.user.username);
-	//console.log(user.username);
-	//console.log(JSON.stringify(player1.user));
+	var p1 = new Player(req.user.username);
+	var p2 = new Player("Invitado");
+	g = new Game(p1, p2);
+	res.redirect('/play');
 	/*	
 		var user = new User({username: req.body.username, 
 						password: req.body.password
