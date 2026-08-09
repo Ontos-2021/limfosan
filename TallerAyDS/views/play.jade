@@ -31,7 +31,11 @@ block content
             h5 Tus cartas — tocá una para jugarla:
             .mano-player
                 each card in currentHand
-                    img.card-click(width="98", height="138", data-card="#{card.show()}", src='/images/#{card.show()}.png')
+                    - var cardName = card.show()
+                    if canPlayCard
+                        img.card-click(width="98", height="138", data-card="#{cardName}", src='/images/#{cardName}.png')
+                    else
+                        img(width="98", height="138", class="card-off", src='/images/#{cardName}.png')
             if !canPlayCard
                 p(style="font-size:13px;color:#c0392b;") No podes jugar carta ahora: responde el envido/truco o elegí otra accion.
     if actions.length
@@ -94,19 +98,18 @@ block content
     br
     .center-block.text-center
         a.btn.btn-default(href='/lobby', role='button') Salir
-
-script.
-    var form = document.querySelector('#playForm');
-    document.querySelectorAll('.card-click').forEach(function(img){
-        img.addEventListener('click', function(){
-            form.querySelector('input[name=value]').value = this.getAttribute('data-card');
-            form.submit();
+    script.
+        var form = document.querySelector('#playForm');
+        document.querySelectorAll('.card-click').forEach(function(img){
+            img.addEventListener('click', function(){
+                form.querySelector('input[name=value]').value = this.getAttribute('data-card');
+                form.submit();
+            });
         });
-    });
-    document.querySelectorAll('button[data-accion]').forEach(function(btn){
-        btn.addEventListener('click', function(){
-            form.querySelector('input[name=action]').value = this.getAttribute('data-accion');
-            form.querySelector('input[name=value]').value = '';
-            form.submit();
+        document.querySelectorAll('button[data-accion]').forEach(function(btn){
+            btn.addEventListener('click', function(){
+                form.querySelector('input[name=action]').value = this.getAttribute('data-accion');
+                form.querySelector('input[name=value]').value = '';
+                form.submit();
+            });
         });
-    });

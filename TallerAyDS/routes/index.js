@@ -144,6 +144,8 @@ function playContext(res, g){
 	var turn   = g.currentRound.currentTurn;
 	var isP1   = turn === 'player1';
 	var allowed = g.currentRound.allowedActions();
+	var state   = g.currentRound.fsm.current;
+	var pendingEnvite = state === 'truco' || state === 'envido';
 
 	var actions = _.filter(allowed, function(a){ return ACTION_META[a] && a !== 'playcard'; })
 		.map(function(a){
@@ -155,7 +157,7 @@ function playContext(res, g){
 		statusMsg   : g.currentRound.statusMessage(),
 		allowed     : allowed,
 		actions     : actions,
-		canPlayCard : allowed.indexOf('playcard') >= 0,
+		canPlayCard : !pendingEnvite && allowed.indexOf('playcard') >= 0,
 		isP1Turn    : isP1,
 		currentPlayerName : isP1 ? g.player1.name : g.player2.name,
 		otherPlayerName   : isP1 ? g.player2.name : g.player1.name,
