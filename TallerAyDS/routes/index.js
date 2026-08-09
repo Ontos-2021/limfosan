@@ -4,6 +4,7 @@ var User = require('../models/user');
 var router = express.Router();
 var Game = require("../models/game").game;
 var Player = require("../models/player").player;
+var _ = require('lodash');
 var g = undefined;
 //var namep1 = undefined;
 
@@ -22,20 +23,16 @@ router.get('/register', function(req, res) {
 });
 
 router.post('/register', function(req, res) {
-	var user = new User({username: req.body.username, 
-						password: req.body.password
-					});	
-	user.save(function(err) {
-	if(err) {
-		return res.render("register", { info: "Usuario ya registrado."});
-	}else{
-		req.login(user, function(err) {
+	User.register(new User({ username: req.body.username }), req.body.password, function(err, user) {
 		if (err) {
-			return res.render("register", { info: 'Usuario o clave incorrecto.' });
+			return res.render("register", { info: "Usuario ya registrado o contraseña inválida."});
 		}
-		return res.redirect('/lobby');
+		req.login(user, function(err) {
+			if (err) {
+				return res.render("register", { info: 'Usuario o clave incorrecto.' });
+			}
+			return res.redirect('/lobby');
 		});
-	}
 	});
 });
 
@@ -47,18 +44,13 @@ router.get('/login', function(req, res) {
 });
 
 router.post('/login', function(req, res) {   
-	User.findOne({username: req.body.username},function(err,user) {
-		if (user === null){
-			return res.render("login", { message: 'Usuario no registrado.'});
+	User.authenticate()(req.body.username, req.body.password, function(err, user, info) {
+		if (err || !user) {
+			return res.render("login", { message: 'Usuario o contraseña incorrectos.' });
 		}
-		if (user.password !== req.body.password) {
-			return res.render("login", { message: 'Contraseña incorrecta.' });
-		}
-		else{
-			req.login(user,function(err){			
-				return res.redirect('/lobby');
-			});			
-		}
+		req.login(user, function(err) {			
+			return res.redirect('/lobby');
+		});			
 	});
 });
 
@@ -109,6 +101,7 @@ router.get('/newgame', function(req,res){
 	var p1 = new Player(req.user.username);
 	var p2 = new Player("Invitado");
 	g = new Game(p1, p2);
+	g.currentHand = 'player1';
 	res.redirect('/play');
 	/*	
 		var user = new User({username: req.body.username, 
@@ -138,33 +131,72 @@ router.get('/newgame', function(req,res){
 
 // ===================================================================================================================
 
+var ACTION_META = {
+	playcard:  { label: 'Jugar carta',    desc: 'Tirá una carta a la mesa tocando la carta que quieras.' },
+	envido:    { label: 'Envido',   desc: 'Cantá el envido: se comparan puntos de tus cartas (vale 2).' },
+	truco:     { label: 'Truco',       desc: 'Subí la apuesta de la jugada (vale 2). Puede anidar: retruco (4), vale cuatro (6).' },
+	quiero:    { label: 'Quiero',       desc: 'Aceptás el envido o el truco que te cantaron.' },
+	'no-quiero': { label: 'No quiero',  desc: 'Rechazás el envite: el rival suma esos puntos.' },
+	mazo:      { label: 'Ir al mazo',   desc: 'Tirás la jugada y le das el truco al rival.' }
+};
+
+function playContext(res, g){
+	var turn   = g.currentRound.currentTurn;
+	var isP1   = turn === 'player1';
+	var allowed = g.currentRound.allowedActions();
+
+	var actions = _.filter(allowed, function(a){ return ACTION_META[a]; })
+		.map(function(a){
+			return { key: a, label: ACTION_META[a].label, desc: ACTION_META[a].desc };
+		});
+
+	res.render('play', {
+		g : g,
+		statusMsg   : g.currentRound.statusMessage(),
+		allowed     : allowed,
+		actions     : actions,
+		canPlayCard : allowed.indexOf('playcard') >= 0,
+		isP1Turn    : isP1,
+		currentPlayerName : isP1 ? g.player1.name : g.player2.name,
+		otherPlayerName   : isP1 ? g.player2.name : g.player1.name,
+		currentHand : isP1 ? g.player1.cards : g.player2.cards,
+		otherHand   : isP1 ? g.player2.cards : g.player1.cards,
+		currentTable : isP1 ? g.currentRound.tablep1 : g.currentRound.tablep2,
+		otherTable   : isP1 ? g.currentRound.tablep2 : g.currentRound.tablep1
+	});
+}
+
 router.get('/play', function(req, res){
-	g.newRound();
-	g.currentRound.deal();
-	g.newRound();
-	g.currentRound.deal();
-	res.render('play', { g : g })
+	if (!g || !g.currentRound || g.currentRound.auxWin) {
+		g.newRound();
+		g.currentRound.deal();
+	}
+	playContext(res, g);
 });
 
 router.post('/play', function(req, res){
-	if(g.currentRound.fsm.cannot(req.body.action)){
-		res.redirect('notmove');  
-	}
-	if(req.body.value == '' && req.body.action == 'playcard'){
-		res.redirect('notmove'); 
-	}
-	g.play(g.currentRound.currentTurn, req.body.action, req.body.value);
-	if(g.score[0] >= 30){
-		res.redirect('win');
-	}
-	else if(g.score[1] >= 30){
-	   res.redirect('win'); 
-	}else{
-		if(g.currentRound.auxWin == true){
-			g.newRound();
-			g.currentRound.deal();
+	try {
+		if(g.currentRound.fsm.cannot(req.body.action)){
+			return res.redirect('notmove');  
 		}
-		res.render('play', { g : g }); 
+		if(req.body.value == '' && req.body.action == 'playcard'){
+			return res.redirect('notmove'); 
+		}
+		g.play(g.currentRound.currentTurn, req.body.action, req.body.value);
+		if(g.score[0] >= 30){
+			return res.redirect('win');
+		}
+		else if(g.score[1] >= 30){
+		   return res.redirect('win'); 
+		}else{
+			if(g.currentRound.auxWin == true){
+				g.newRound();
+				g.currentRound.deal();
+			}
+			return playContext(res, g);
+		}
+	} catch(e) {
+		return res.redirect('notmove');
 	}
 });
 

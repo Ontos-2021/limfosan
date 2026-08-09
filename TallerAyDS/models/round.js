@@ -114,6 +114,53 @@ Round.prototype.actionPrevious = function (){
 }
 //------------------------------------------------------------------------------------
 
+//------------------------------------------------------------------------------------
+Round.prototype.allowedActions = function (){
+  var self = this;
+  var candidates = ['playcard', 'envido', 'truco', 'quiero', 'no-quiero', 'mazo'];
+  return _.filter(candidates, function (action) {
+    return self.fsm.can(action);
+  });
+}
+//------------------------------------------------------------------------------------
+
+//------------------------------------------------------------------------------------
+Round.prototype.statusMessage = function(){
+  var state = this.fsm.current;
+  var p = this.game;
+  var turn = this.currentTurn;
+  var name = turn === 'player1' ? p.player1.name : p.player2.name;
+  var opponent = turn === 'player1' ? p.player2.name : p.player1.name;
+
+  if (state === 'init') {
+    return 'Es tu turno (' + opponent + ' espera): jugá una carta o cantá envido/truco.';
+  }
+
+  if (state === 'envido') {
+    return opponent + ' cantó envido → ' + name + ' responde: Quiero o No-quiero.';
+  }
+
+  if (state === 'truco') {
+    return opponent + ' cantó truco → ' + name + ' responde: ¿Quiero o No-quiero?';
+  }
+
+  if (state === 'quiero' || state === 'no-quiero') {
+    return 'Decisión tomada. Ahora se juegan las cartas.';
+  }
+
+  if (state === 'mazo') {
+    return 'La jugada terminó. Se reparten cartas nuevas.';
+  }
+
+  if (state === 'played-card' || state === 'playcard' || state === 'primer-carta') {
+    return 'Tirá una carta a la mesa.';
+  }
+
+  return 'Continúa la jugada.';
+}
+//------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------
+
 
 //------------------------------------------------------------------------------------
 Round.prototype.distHamming = function(arr1,arr2){
