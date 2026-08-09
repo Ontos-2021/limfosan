@@ -17,7 +17,7 @@ block content
                 each card in otherTable
                     img.card-jugada(width="67", height="85", src='/images/#{card.show()}.png')
             if !otherTable.length
-                small (aunda no jugo)
+                small (aún no jugó)
     .play-card
         .center-block.text-center
             h5 Tus cartas jugadas (#{currentPlayerName}):
@@ -25,7 +25,7 @@ block content
                 each card in currentTable
                     img.card-jugada(width="67", height="85", src='/images/#{card.show()}.png')
             if !currentTable.length
-                small (aunda no jugo)
+                small (aún no jugó)
     .play-card
         .center-block.text-center
             h5 Tus cartas — tocá una para jugarla:
@@ -37,13 +37,14 @@ block content
     if actions.length
         .play-card
             .center-block.text-center
-                h5 Movimientos permitidos:
+                h5 Otros movimientos permitidos:
                 ul.actions-list
                     each act in actions
-                        li
-                            button.btn.btn-primary(type='button', data-accion="#{act.key}")
-                                = act.label
-                            span.action-desc= act.desc
+                        if act.key !== 'playcard'
+                            li
+                                button.btn.btn-primary(type='button', data-accion="#{act.key}")
+                                    = act.label
+                                span.action-desc= act.desc
     else
         .play-card
             .center-block.text-center
@@ -85,7 +86,7 @@ block content
             h6 Descripción de los movimientos
             ul
                 li: b Jugar carta: Elegí una de tu mano, se juega al instante.
-                li: b Envido: vale 2. Sumas 2 cartas del mismo palo (figuras valen 0). Quiero → comparas; No quiero → rival gana 1.
+                li: b Envido: vale 2. Sumás 2 cartas del mismo palo (figuras valen 0). Quiero → comparás; No quiero → rival gana 1.
                 li: b Truco: vale 2. Luego podés pedir 'retruco' (4) y 'vale cuatro' (6).
                 li: b Quiero: aceptás lo cantado (Envido o Truco).
                 li: b No quiero: el rival gana los puntos cantados.

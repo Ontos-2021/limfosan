@@ -145,7 +145,7 @@ function playContext(res, g){
 	var isP1   = turn === 'player1';
 	var allowed = g.currentRound.allowedActions();
 
-	var actions = _.filter(allowed, function(a){ return ACTION_META[a]; })
+	var actions = _.filter(allowed, function(a){ return ACTION_META[a] && a !== 'playcard'; })
 		.map(function(a){
 			return { key: a, label: ACTION_META[a].label, desc: ACTION_META[a].desc };
 		});
