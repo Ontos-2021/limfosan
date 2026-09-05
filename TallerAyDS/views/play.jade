@@ -1,75 +1,115 @@
 extends layout
 block content
     body.bkimg
-    form(role='form', action='/play', method='POST')        
-        .play-card.effect7
-            div(class="remove-float center-block text-center")
-                h4.span#sbfont #{g.player1.name}: #{g.score[0]} - #{g.player2.name}: #{g.score[1]}               
-        .play-card.effect7
-            br
-            div(class="remove-float center-block text-center")
-                //hr(style="margin-top: 5px; margin-bottom: 5px")
-                if (g.currentRound.bandera == true)
-                    h4.span#sbfont ¿Truco cantado?: Si
-                p Cartas #{g.player1.name}
-                each card1 in g.currentRound.tablep1
-                    td
-                    &nbsp;    
-                    img(width="67", height="85", src='/images/#{card1.show()}.png')
-                p Cartas #{g.player2.name}
-                each card1 in g.currentRound.tablep2
-                    td
-                    &nbsp;    
-                    img(width="67", height="85", src='/images/#{card1.show()}.png')   
-                p
-            br   
-        .play-card.effect7
-            div(class="remove-float center-block text-center")
-                br
-                .form-group.col-sm-6                   
-                    label.col-sm-2.control-label(for='Accion')
-                        | Acción
-                    select#Accion.form-control(name='action')
-                        option(value='playcard') Jugar carta                       
-                        option(value='truco') Truco
-                        option(value='envido') Envido
-                        option(value='quiero') Quiero
-                        option(value='no-quiero') No-quiero
-                        option(value='mazo') Ir al mazo
-                .form-group.col-sm-6
-                    label.col-sm-2.control-label(for='Carta')
-                        | Carta 
-                    select#Accion.form-control(name='value')
-                        option(value="") - Sin carta - 
-                        if (g.currentRound.currentTurn == 'player1')
-                            each card1 in g.player1.cards
-                                td
-                                &nbsp;    
-                                option(value='#{card1.show()}') #{card1.show()}
-                        else
-                            each card2 in g.player2.cards
-                                td
-                                &nbsp;    
-                                option(value='#{card2.show()}') #{card2.show()}
-                .form-group
-                    button.btn.btn-primary(type='submit') Jugar
-                    &nbsp;      
-                    a.btn.btn-default(href='/lobby', role='button') Salir
-            if (g.currentRound.currentTurn == 'player1')
-                h4.span#sbfont Turno de: #{g.player1.name} 
-            else
-                h4.span#sbfont Turno de: #{g.player2.name}                      
-            if (g.currentRound.currentTurn == 'player1')
-                //p Cartas de #{g.player1.name} :
-                each card1 in g.player1.cards
-                    td
-                    &nbsp;    
-                    img(width="128", height="165", src='/images/#{card1.show()}.png')
-            else
-                //p Cartas de #{g.player2.name} :
-                each card2 in g.player2.cards
-                    td
-                    &nbsp;    
-                    img(width="128", height="165", src='/images/#{card2.show()}.png') 
+    .play-card
+        div(class="remove-float center-block text-center")
+            h4 #{g.player1.name}: #{g.score[0]} - #{g.player2.name}: #{g.score[1]}
+            if (g.currentRound.flagTruco)
+                h5(style="color:red;") Truco: la jugada vale 2 puntos ahora
+            hr(style="margin:8px 0;")
+            .status
+                h4 Turno de: #{currentPlayerName}
+                p#statusMsg= statusMsg
+    .play-card
+        .center-block.text-center
+            h5 Cartas del rival (#{otherPlayerName}):
+            .jugadas
+                each card in otherTable
+                    img.card-jugada(width="67", height="85", src='/images/#{card.show()}.png')
+            if !otherTable.length
+                small (aún no jugó)
+    .play-card
+        .center-block.text-center
+            h5 Tus cartas jugadas (#{currentPlayerName}):
+            .jugadas
+                each card in currentTable
+                    img.card-jugada(width="67", height="85", src='/images/#{card.show()}.png')
+            if !currentTable.length
+                small (aún no jugó)
+    .play-card
+        .center-block.text-center
+            h5 Tus cartas — tocá una para jugarla:
+            .mano-player
+                each card in currentHand
+                    - var cardName = card.show()
+                    if canPlayCard
+                        img.card-click(width="98", height="138", data-card="#{cardName}", src='/images/#{cardName}.png')
+                    else
+                        img(width="98", height="138", class="card-off", src='/images/#{cardName}.png')
+            if !canPlayCard
+                p(style="font-size:13px;color:#c0392b;") No podes jugar carta ahora: responde el envido/truco o elegí otra accion.
+    if actions.length
+        .play-card
+            .center-block.text-center
+                h5 Otros movimientos permitidos:
+                ul.actions-list
+                    each act in actions
+                        if act.key !== 'playcard'
+                            li
+                                button.btn.btn-primary(type='button', data-accion="#{act.key}")
+                                    = act.label
+                                span.action-desc= act.desc
+    else
+        .play-card
+            .center-block.text-center
+                p(style="color:#c0392b;") No hay movimientos disponibles ahora. Las cartas se reparten de nuevo.
+    .play-card
+        .center-block.text-center
+            h5 Mano del rival (#{otherPlayerName}) — visible para aprender:
+            .mano-oponente
+                each card in otherHand
+                    img(width="80", height="113", src='/images/#{card.show()}.png')
+    form#playForm(action='/play', method='POST')
+        input(type='hidden', name='action', value='playcard')
+        input(type='hidden', name='value', value='')
+    details(style="max-width:540px;margin:10px auto;background:#F7F7F7;padding:12px;border-radius:4px;")
+        summary
+            strong Como se juega al Truco (guia rapida)
+        .help-content
             p
-            br
+                b Objetivo:
+                |  Sumá 25 puntos antes que el rival. Cada mano vale 1 punto, pero cantando truco podés jugar por 2, 4 o 6.
+            p
+                b Cómo se gana cada carta:
+                |  cada jugador tira una carta y gana la de mayor jerarquía. Una mano tiene 3 cartas y gana quien suma 2.
+            h6 Jerarquía de las cartas (mayor → menor)
+            table.hierarchy
+                tr: td 1 de espada
+                tr: td 1 de basto
+                tr: td 7 de espada
+                tr: td 7 de oro
+                tr: td 3
+                tr: td 2
+                tr: td 1 de copa / 1 de oro
+                tr: td 12
+                tr: td 11
+                tr: td 7 de copa / 7 de basto
+                tr: td 6
+                tr: td 5
+                tr: td 4
+            h6 Descripción de los movimientos
+            ul
+                li: b Jugar carta: Elegí una de tu mano, se juega al instante.
+                li: b Envido: vale 2. Sumás 2 cartas del mismo palo (figuras valen 0). Quiero → comparás; No quiero → rival gana 1.
+                li: b Truco: vale 2. Luego podés pedir 'retruco' (4) y 'vale cuatro' (6).
+                li: b Quiero: aceptás lo cantado (Envido o Truco).
+                li: b No quiero: el rival gana los puntos cantados.
+                li: b Ir al mazo: tirás la jugada y el rival gana los puntos (2 si hay carta, 1 si es la primera).
+    br
+    .center-block.text-center
+        a.btn.btn-default(href='/lobby', role='button') Salir
+    script.
+        var form = document.querySelector('#playForm');
+        document.querySelectorAll('.card-click').forEach(function(img){
+            img.addEventListener('click', function(){
+                form.querySelector('input[name=value]').value = this.getAttribute('data-card');
+                form.submit();
+            });
+        });
+        document.querySelectorAll('button[data-accion]').forEach(function(btn){
+            btn.addEventListener('click', function(){
+                form.querySelector('input[name=action]').value = this.getAttribute('data-accion');
+                form.querySelector('input[name=value]').value = '';
+                form.submit();
+            });
+        });
