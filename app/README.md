@@ -18,21 +18,30 @@ Monorepo de la nueva plataforma (Truco primero). Ver
 
 ```sh
 npm install        # instala workspaces
-npm run build      # compila en orden: shared, juego-truco, web, server
-npm test           # compila deps y corre vitest de cada paquete
+npm run build      # compila en orden: juego-truco, shared, web, server
+npm test           # compila deps y corre vitest de cada paquete (necesita Postgres, ver abajo)
 npm run typecheck  # tsc --noEmit por paquete
 npm run lint       # eslint
 npm run format     # prettier
 ```
 
-Desarrollo:
+## Desarrollo local con Postgres (E2/E4)
 
 ```sh
-npm run dev -w @limfosan/server   # backend con recarga (puerto 3000)
-npm run dev -w @limfosan/web      # frontend Vite (puerto 5173, proxea /api)
+cp .env.example .env   # opcional; los defaults apuntan al compose local
+docker compose -f docker-compose.dev.yml up -d   # postgres:16 en 127.0.0.1:5433
+npm run dev -w @limfosan/server   # backend con recarga (puerto 3000, migra solo)
+npm run dev -w @limfosan/web      # frontend Vite (puerto 5173, proxea /api y /socket.io)
 ```
 
-## Partida local vs CPU
+- Las migraciones (`packages/server/drizzle/`) corren solas al arrancar.
+- Tests de servidor: usan `TEST_DATABASE_URL` (default `truco_test` en el
+  compose) y la crean si falta. Requieren el compose levantado.
+- Tests web E2E: levantan backend + frontend solos (BD `truco_e2e`).
+- Primer admin: registrarse con `ADMIN_EMAIL` + `ADMIN_BOOTSTRAP_CODE`
+  (un solo uso), luego enrollar TOTP vía API (ver `docs/runbook-beta.md`).
+
+## Partida local vs CPU y online
 
 La web implementa el **reglamento v1 completo** (`docs/reglamento-truco-v1.md`):
 baraja de 40 cartas, envido con cadena completa (incluida falta envido al resto
@@ -42,7 +51,10 @@ cartas y lo público, igual que vos. Cada partida usa `?seed=N` (reproducible).
 
 - Motor puro: `packages/juego-truco` (`engine.ts` + `bot.ts`), sin I/O; 40 pruebas
   unitarias + simulación de 1500 partidas aleatorias (fuzzing).
-- Aún **no** hay juego online (sockets), persistencia ni cuentas: eso es E4/H3.
+- **Online (E2+E4):** invitados sin registro, cuentas con email, mesas privadas
+  por enlace (`/?mesa=ABC123`), motor autoritativo en servidor, persistencia
+  Postgres, reconexión con gracia, timers, revancha y admin con MFA.
+  Operación: ver `docs/runbook-beta.md`.
 - El nombre `Mesa` y la identidad visual son provisionales.
 
 **Baraja dual:** el jugador elige entre "Clásica" (los PNG heredados, 36 cartas,

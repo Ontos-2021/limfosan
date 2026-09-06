@@ -1,4 +1,11 @@
-import { SUITS, type Rank, type Suit } from '@limfosan/juego-truco';
+import {
+  SUITS,
+  cardId,
+  cardLabel,
+  type Rank,
+  type Suit,
+} from '@limfosan/juego-truco';
+import type { Card } from '@limfosan/juego-truco';
 import { CardSvg } from './deck';
 import { useSkin } from './skin';
 
@@ -7,6 +14,15 @@ export interface DemoCard {
   suit: Suit;
   rank: Rank;
   label: string;
+}
+
+export function toCardView(card: Card): DemoCard {
+  return {
+    id: cardId(card),
+    suit: card.suit,
+    rank: card.rank,
+    label: cardLabel(card),
+  };
 }
 
 /**

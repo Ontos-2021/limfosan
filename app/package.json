@@ -7,8 +7,8 @@
     "packages/*"
   ],
   "scripts": {
-    "build": "npm run build -w @limfosan/shared && npm run build -w @limfosan/juego-truco && npm run build -w @limfosan/web && npm run build -w @limfosan/server",
-    "test": "npm run build -w @limfosan/shared && npm run build -w @limfosan/juego-truco && npm run test -w @limfosan/shared && npm run test -w @limfosan/juego-truco && npm run test -w @limfosan/server",
+    "build": "npm run build -w @limfosan/juego-truco && npm run build -w @limfosan/shared && npm run build -w @limfosan/web && npm run build -w @limfosan/server",
+    "test": "npm run build -w @limfosan/juego-truco && npm run build -w @limfosan/shared && npm run test -w @limfosan/shared && npm run test -w @limfosan/juego-truco && npm run test -w @limfosan/server",
     "typecheck": "npm run typecheck --workspaces --if-present",
     "lint": "eslint packages/*/src packages/*/test",
     "format": "prettier --write .",

@@ -1,30 +1,31 @@
 # Diseño UX/UI: mesa de Truco
 
-> **Actualización 2026-09-06 (2ª iteración):** la mesa ya no es una demo
-> guionizada. Implementa el **reglamento v1 completo** contra la CPU mediante
-> el motor puro `@limfosan/juego-truco` (ver `docs/reglamento-truco-v1.md`).
-> Este documento conserva los principios de diseño y ahora registra el estado
-> real: qué es juego verdadero y qué sigue siendo vista simulada.
+> **Actualización 2026-09-06 (3ª iteración, E2+E4):** además de la partida
+> local, hay **juego online real**: lobby (crear/unirse por código), mesa con
+> snapshots por asiento, temporizadores, reconexión verdadera, revancha entre
+> humanos y diálogo de cuenta (invitado/registro/login). El modo local sigue
+> intacto como puerta de entrada sin red.
 
 ## Estado y dirección aprobada
 
-La dirección aprobada es una interfaz limpia y moderna, con Truco como primer juego y una base visual reutilizable para futuros juegos de cartas. La implementación actual es una **partida local real contra CPU** con el reglamento v1; el juego en red (sockets), la persistencia y las cuentas siguen fuera de alcance.
+La dirección aprobada es una interfaz limpia y moderna, con Truco como primer juego y una base visual reutilizable para futuros juegos de cartas. Hay dos modos: **partida local contra CPU** (reglamento v1, sin red) y **partida online** (motor autoritativo en servidor, persistencia Postgres, sesiones). La mesa local conserva su simulación de reconexión identificada como tal; en online la reconexión es real.
 
-Lo que ya es juego real: reparto con semilla reproducible (`?seed=N`), bazas y pardas, envido con cadena completa (incluida falta envido "al resto del puntero"), truco/retruco/vale cuatro con la regla de recante por aceptante, mazo con previsualización de puntos, cierre a 30 y revancha.
+Lo que ya es juego real: reparto con semilla reproducible (`?seed=N`) en local; online con reparto del servidor, bazas y pardas, envido con cadena completa (incluida falta envido "al resto del puntero"), truco/retruco/vale cuatro con la regla de recante por aceptante, mazo con previsualización de puntos, cierre a 30 y revancha (nueva partida local o nueva mesa compartida).
 
-Lo que sigue siendo vista simulada (identificada como tal en la UI): el estado de **reconexión** (no hay conexión que cortar) y los controles de escenarios, que hoy solo ofrecen reconexión simulada y reinicio.
+Lo que sigue fuera de alcance: emparejamiento automático ("jugar ahora"), tutorial guiado, PWA instalable, chat libre (solo saludos predefinidos) y espectadores.
 
 ## Alcance actual y futuro
 
 | Área          | Implementado ahora                                                | Integración futura, fuera del alcance actual           |
 | ------------- | ----------------------------------------------------------------- | ------------------------------------------------------ |
-| Mesa y cartas | Motor de reglas v1 autoritativo en cliente, partida completa      | Validación autoritativa en servidor (multiusuario)     |
-| Acciones      | Selección/confirmación, cantos con respuestas contextuales reales | Idem, con sesión e identidad verificada                |
-| Rival         | CPU local determinista, solo ve sus cartas y lo público           | Personas remotas, turnos y sincronización multijugador |
-| Escenarios    | Reconexión simulada (pausa real de acciones) y reinicio           | Recuperación de sesión y reconexión reales             |
-| Datos         | Estado efímero en memoria del navegador; semilla en la URL        | Persistencia, cuentas e historial                      |
+| Mesa y cartas | Local: motor v1 en cliente. Online: snapshots por asiento         | Emparejamiento, tutorial, PWA (E5–E6)                  |
+| Acciones      | Selección/confirmación, cantos contextuales, comandos idempotentes| Cola "jugar ahora", torneos                            |
+| Rival         | CPU local o persona remota (presencia en línea)                   | Ranking, bloqueos entre pares (E6)                     |
+| Escenarios    | Local: simulación. Online: reconexión real con gracia             | —                                                      |
+| Datos         | Local efímero. Online: Postgres + sesiones + cuentas              | Historial visible, estadísticas (E6)                   |
 
-No se implementan sockets, multijugador en red, autenticación ni suscripciones en esta etapa. La UI no insinúa que esas capacidades existen: el rótulo dice "Local vs CPU".
+No hay suscripciones ni publicidad en esta etapa. El modo online requiere backend;
+sin conexión, la app ofrece igual la partida local.
 
 ## Lenguaje visual
 

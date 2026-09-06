@@ -17,6 +17,28 @@ jobs:
     defaults:
       run:
         working-directory: app
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: truco
+          POSTGRES_PASSWORD: truco-ci
+          POSTGRES_DB: truco_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U truco"
+          --health-interval 5s
+          --health-timeout 3s
+          --health-retries 10
+    env:
+      DATABASE_URL: postgres://truco:truco-ci@127.0.0.1:5432/truco_test
+      TEST_DATABASE_URL: postgres://truco:truco-ci@127.0.0.1:5432/truco_test
+      SESSION_SECRET: ci-session-secret-para-pruebas-solamente-32b
+      ADMIN_EMAIL: admin@ejemplo.local
+      ADMIN_BOOTSTRAP_CODE: CI-BOOTSTRAP-1
+      APP_URL: http://127.0.0.1:3000
+      NODE_ENV: test
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -27,7 +49,7 @@ jobs:
       - run: npm ci
       - run: npm run format:check
       - run: npm run lint
-      - run: npm run build -w @limfosan/shared && npm run build -w @limfosan/juego-truco
+      - run: npm run build -w @limfosan/juego-truco && npm run build -w @limfosan/shared
       - run: npm run typecheck
       - run: npm test
       - run: npm run build

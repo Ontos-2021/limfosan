@@ -1,0 +1,23 @@
+# Postgres local para desarrollo y pruebas (E2/E4).
+# Uso: docker compose -f docker-compose.dev.yml up -d
+# La app en desarrollo usa 127.0.0.1:5433 por defecto (ver config.ts).
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: truco-postgres-dev
+    environment:
+      POSTGRES_USER: truco
+      POSTGRES_PASSWORD: truco
+      POSTGRES_DB: truco
+    ports:
+      - '127.0.0.1:5433:5432'
+    volumes:
+      - truco-postgres-dev:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U truco']
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+volumes:
+  truco-postgres-dev:

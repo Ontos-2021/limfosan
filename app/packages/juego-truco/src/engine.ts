@@ -135,6 +135,10 @@ export interface LastEvent {
     | 'mazo';
   by: PlayerId | null;
   summary: string;
+  /** En eventos 'bid': qué se cantó (para vistas por asiento). */
+  bidKind?: PendingKind;
+  /** En eventos 'response': qué se respondió (para vistas por asiento). */
+  response?: 'quiero' | 'noQuiero';
   envido?: EnvidoResult;
   handWinner?: PlayerId;
   handPoints?: number;
@@ -598,6 +602,7 @@ export function applyAction(
         kind: 'bid',
         by: player,
         summary: `${nameOf(player)} ${player === 'p0' ? 'cantaste' : 'cantó'}: ${bidLabel(action.type)} ${worth}`,
+        bidKind: action.type,
       };
       return next;
     }
@@ -617,6 +622,7 @@ export function applyAction(
         next.lastEvent = {
           kind: 'response',
           by: player,
+          response: 'quiero',
           summary: `¡Quiero! La mano vale ${TRUCO_WORTH[hand.trucoLevel]} puntos.`,
         };
         return next;
@@ -643,6 +649,7 @@ export function applyAction(
         next.lastEvent = {
           kind: 'matchEnd',
           by: winner,
+          response: 'quiero',
           summary: `Envido ${points} para ${nameOf(winner) === 'Vos' ? 'vos' : 'la CPU'} (${values.p0} a ${values.p1}). ¡Partida ${next.scores.p0} a ${next.scores.p1}!`,
           envido: result,
           matchWinner: winner,
@@ -651,6 +658,7 @@ export function applyAction(
         next.lastEvent = {
           kind: 'envidoResult',
           by: winner,
+          response: 'quiero',
           summary:
             `Envido: vos ${values.p0}, CPU ${values.p1}. ` +
             `Gana ${nameOf(winner) === 'Vos' ? 'vos' : 'la CPU'} (+${points}).` +
@@ -676,6 +684,7 @@ export function applyAction(
           next.lastEvent = {
             kind: 'matchEnd',
             by: pending.by,
+            response: 'noQuiero',
             summary: `${bidLabel(pending.kind)} no querido. ¡Partida ${next.scores.p0} a ${next.scores.p1}!`,
             matchWinner: next.winner ?? undefined,
           };
@@ -683,6 +692,7 @@ export function applyAction(
           next.lastEvent = {
             kind: 'handEnd',
             by: pending.by,
+            response: 'noQuiero',
             summary: `${bidLabel(pending.kind)} no querido: ${nameOf(pending.by) === 'Vos' ? 'vos sumás' : 'la CPU suma'} ${points}.`,
             handWinner: pending.by,
             handPoints: points,
@@ -705,6 +715,7 @@ export function applyAction(
         next.lastEvent = {
           kind: 'matchEnd',
           by: pending.by,
+          response: 'noQuiero',
           summary: `Envido rechazado (+${points}). ¡Partida ${next.scores.p0} a ${next.scores.p1}!`,
           matchWinner: next.winner ?? undefined,
         };
@@ -712,6 +723,7 @@ export function applyAction(
         next.lastEvent = {
           kind: 'response',
           by: player,
+          response: 'noQuiero',
           summary:
             `No quisiste (+${points} para ${nameOf(pending.by) === 'Vos' ? 'vos' : 'la CPU'}).` +
             (suspended ? ' Ahora respondé el truco pendiente.' : ''),
