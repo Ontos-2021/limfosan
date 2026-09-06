@@ -22,6 +22,8 @@ FROM node:24-bookworm-slim AS runner
 ENV NODE_ENV=production
 WORKDIR /app
 RUN useradd --create-home --uid 1001 appuser
+# curl para el healthcheck de Coolify (ejecuta curl/wget dentro del contenedor).
+RUN apt-get update && apt-get install -y --no-install-recommends curl && rm -rf /var/lib/apt/lists/*
 COPY package.json package-lock.json ./
 COPY packages/server/package.json packages/server/package.json
 COPY packages/web/package.json packages/web/package.json
