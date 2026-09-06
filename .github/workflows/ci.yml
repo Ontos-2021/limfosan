@@ -27,8 +27,11 @@ jobs:
       - run: npm ci
       - run: npm run format:check
       - run: npm run lint
+      - run: npm run build -w @limfosan/shared && npm run build -w @limfosan/juego-truco
       - run: npm run typecheck
       - run: npm test
       - run: npm run build
+      - run: npx playwright install --with-deps chromium webkit
+      - run: npm run test -w @limfosan/web -- --workers=2
       - name: Docker build (smoke)
         run: docker build -t limfosan-app:ci --build-arg COMMIT_SHA=${{ github.sha }} .

@@ -4,6 +4,8 @@
 > **Deriva de:** [Plan maestro](plan-plataforma-juegos-de-cartas.md) (visión, modelo comercial, arquitectura, despliegue, presupuesto, hitos H1–H10).
 > **Objetivo de esta fase:** llevar el **Truco argentino 1v1 online completo** a una **beta cerrada con los primeros usuarios**, desplegada en Coolify, con operación mínima medible.
 > **Definición de "primer buen producto":** dos personas en cualquier celular juegan una partida completa con reglas correctas; si algo se corta, la partida sobrevive; si algo está mal, hay cómo reportarlo y cómo arreglarlo sin desplegar a mano.
+>
+> **Avance:** E0 (reglamento v1) y E1 (base desplegable) completados. **E3 (motor) implementado y probado** (40 tests + fuzzing de 1500 partidas) y la UI ya juega una partida real contra CPU local. Pendiente de E3: medir cobertura de ramas y validación con jugadores experimentados. E2 (identidad) y E4 (online/persistencia) sin empezar.
 
 ---
 

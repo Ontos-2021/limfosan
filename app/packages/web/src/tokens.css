@@ -1,0 +1,15 @@
+:root {
+  color-scheme: light;
+  --paper: #f6f4ed;
+  --white: #fffefa;
+  --sand: #ebe8dc;
+  --ink: #25392e;
+  --muted: #647064;
+  --green: #204b3d;
+  --terracotta: #ae634b;
+  --focus: #bd712f;
+  --line: #dfdfd3;
+  --font-body: 'Segoe UI', system-ui, sans-serif;
+  --font-display:
+    'Iowan Old Style', 'Palatino Linotype', 'Book Antiqua', Georgia, serif;
+}

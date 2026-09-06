@@ -162,7 +162,7 @@ Ante cualquier duda de implementación, **este documento manda**.
 
 ### Falta envido
 - R27. 24–18, gana el de 18 → +6. Rechazo directo → +1 al cantor.
-- R28. 29–17, gana el de 17 → +1 y **cierra la partida** (30).
+- R28. 29–17, gana el puntero (29) → +1 y **cierra la partida** (30). Si gana el de atrás (17), suma 1 (29–18) y la partida sigue.
 - R29. Falta querida **sustituye** lo acumulado (envido→falta querida en 20–20 gana el envido → +10, no 12).
 - R30. Envido→real→falta rechazada → +5 al último cantor previo (2+3).
 - R31. Falta cierra la cadena: falta → real **rechazado por el motor**.

@@ -8,3 +8,5 @@ packages/*/coverage
 .env
 .env.*
 npm-debug.log
+packages/*/test-results
+packages/*/playwright-report
