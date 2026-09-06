@@ -1,0 +1,30 @@
+{
+  "name": "@limfosan/server",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Backend de la plataforma de juegos de cartas (Truco primero)",
+  "type": "module",
+  "main": "./dist/index.js",
+  "scripts": {
+    "dev": "npm run build -w @limfosan/shared && npm run build -w @limfosan/juego-truco && tsx watch src/index.ts",
+    "build": "tsc -p tsconfig.build.json",
+    "start": "node dist/index.js",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@limfosan/juego-truco": "^0.1.0",
+    "@limfosan/shared": "^0.1.0",
+    "express": "^4.21.2",
+    "helmet": "^8.0.0"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.21",
+    "@types/node": "^24.0.0",
+    "@types/supertest": "^6.0.2",
+    "supertest": "^7.0.0",
+    "tsx": "^4.19.0",
+    "typescript": "^5.9.2",
+    "vitest": "^3.0.0"
+  }
+}

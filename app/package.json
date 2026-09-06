@@ -1,0 +1,30 @@
+{
+  "name": "@limfosan/root",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Plataforma de juegos de cartas — monorepo (Truco primero)",
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "build": "npm run build -w @limfosan/shared && npm run build -w @limfosan/juego-truco && npm run build -w @limfosan/web && npm run build -w @limfosan/server",
+    "test": "npm run build -w @limfosan/shared && npm run build -w @limfosan/juego-truco && npm run test -w @limfosan/shared && npm run test -w @limfosan/juego-truco && npm run test -w @limfosan/server",
+    "typecheck": "npm run typecheck --workspaces --if-present",
+    "lint": "eslint packages/*/src packages/*/test",
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.32.0",
+    "eslint": "^9.32.0",
+    "prettier": "^3.6.2",
+    "typescript": "^5.9.2",
+    "typescript-eslint": "^8.39.0"
+  },
+  "engines": {
+    "node": ">=24"
+  },
+  "allowScripts": {
+    "esbuild@0.28.2": true
+  }
+}
