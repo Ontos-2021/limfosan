@@ -285,7 +285,7 @@ export default function OnlineTable({
   async function copyLink() {
     try {
       await navigator.clipboard.writeText(
-        `Sumate a mi mesa de Truco: ${shareUrl}`,
+        `Sumate a mi mesa de Truquito: ${shareUrl}`,
       );
       push('Enlace copiado. ¡Compartilo!');
     } catch {
@@ -646,7 +646,7 @@ export default function OnlineTable({
         onClose={() => setPanel(null)}
       >
         <div className="sheet-header">
-          <span className="eyebrow">MESA / TRUCO</span>
+          <span className="eyebrow">TRUQUITO / TRUCO</span>
           <button
             className="icon-button"
             aria-label="Cerrar"

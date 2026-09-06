@@ -50,14 +50,12 @@ export function createApp(config: AppConfig, deps: AppDeps): Express {
   app.use(express.json({ limit: '100kb' }));
 
   // Healthcheck con identidad: valida app + versión, no solo un 200.
+  // No expone env/commit/node (evita fingerprinting en producción).
   app.get('/api/health', (_req, res) => {
     res.json({
       status: 'ok',
-      app: 'truco',
+      app: 'truquito',
       version: config.version,
-      env: config.env,
-      commit: config.commit,
-      node: process.version,
     });
   });
 

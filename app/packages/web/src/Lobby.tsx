@@ -136,10 +136,9 @@ export default function Lobby({
             </p>
           </div>
           <section className="demo-note">
-            <span className="demo-label">BETA CERRADA</span>
+            <span className="demo-label">JUEGO EN LÍNEA</span>
             <p>
-              Estás probando el juego online. Si algo falla, recargá: la partida
-              se recupera desde el servidor.
+              Si algo falla, recargá: la partida se recupera desde el servidor.
             </p>
           </section>
         </aside>

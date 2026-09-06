@@ -168,6 +168,13 @@ export function useOnlineMatch(
         });
     };
     const onConnectError = (err: Error) => {
+      if (/demasiadas conexiones/i.test(err.message)) {
+        push(
+          'Hay mucha gente conectada. Esperá unos segundos y reintentá.',
+          'error',
+        );
+        return;
+      }
       if (/sesión|origen/i.test(err.message)) {
         getSocket().disconnect();
         setError('Tu sesión venció. Recargá la página para seguir.');

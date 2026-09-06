@@ -56,7 +56,7 @@ async function playUntilScore(page: Page, initial: string | null) {
 
 test.beforeEach(async ({ page }) => {
   await page.route('**/api/health', (route) =>
-    route.fulfill({ json: { app: 'truco', status: 'ok' } }),
+    route.fulfill({ json: { app: 'truquito', status: 'ok', version: 'test' } }),
   );
   await gotoSeed(page);
 });

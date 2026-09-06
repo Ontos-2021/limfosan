@@ -197,7 +197,7 @@ export default function AccountDialog({ onClose }: { onClose: () => void }) {
                 })
               }
             >
-              Entrar
+              Entrá
             </button>
           </div>
           <button
@@ -234,12 +234,12 @@ export default function AccountDialog({ onClose }: { onClose: () => void }) {
             />
           </label>
           <label className="form-field">
-            <span>Código de invitación (si tenés)</span>
+            <span>Código de invitación</span>
             <input
               value={invite}
               onChange={(e) => setInvite(e.target.value.toUpperCase())}
               autoComplete="off"
-              placeholder="BETA-XXXX"
+              placeholder="Ej: ABC123"
             />
           </label>
           {error && (

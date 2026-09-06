@@ -55,7 +55,10 @@ cartas y lo público, igual que vos. Cada partida usa `?seed=N` (reproducible).
   por enlace (`/?mesa=ABC123`), motor autoritativo en servidor, persistencia
   Postgres, reconexión con gracia, timers, revancha y admin con MFA.
   Operación: ver `docs/runbook-beta.md`.
-- El nombre `Mesa` y la identidad visual son provisionales.
+- La marca es **Truquito**. Los PNG de la baraja clásica **no tienen
+  licencia verificada**: su uso está autorizado solo para evaluación local
+  (ver `packages/web/public/cards/README.md`); antes de abrir a usuarios
+  externos hay que verificar licencias o usar solo la baraja propia.
 
 **Baraja dual:** el jugador elige entre "Clásica" (los PNG heredados, 36 cartas,
 con los cuatro dieces dibujados como SVG propio como reserva) y "Propia" (SVG

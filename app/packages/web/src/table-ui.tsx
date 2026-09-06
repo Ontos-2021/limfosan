@@ -330,11 +330,11 @@ export function HelpContent() {
           <dd>2 / 3 / 4 puntos</dd>
         </div>
         <div>
-          <dt>Envido querido</dt>
+          <dt>Envido</dt>
           <dd>2 puntos</dd>
         </div>
         <div>
-          <dt>Real envido querido</dt>
+          <dt>Real envido</dt>
           <dd>3 puntos</dd>
         </div>
         <div>

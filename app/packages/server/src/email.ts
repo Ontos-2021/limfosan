@@ -52,8 +52,7 @@ export class ResendEmailSender implements EmailSender {
       }),
     });
     if (!res.ok) {
-      const body = await res.text().catch(() => '');
-      throw new Error(`Resend respondió ${res.status}: ${body.slice(0, 200)}`);
+      throw new Error(`Resend respondió ${res.status}`);
     }
   }
 }
@@ -64,7 +63,7 @@ export function verificationEmail(
 ): Pick<EmailMessage, 'subject' | 'text' | 'html'> {
   const url = `${appUrl}/verificar?token=${encodeURIComponent(token)}`;
   return {
-    subject: 'Confirmá tu cuenta de Mesa',
+    subject: 'Confirmá tu cuenta de Truquito',
     text: `¡Hola! Confirmá tu cuenta abriendo este enlace (vence en 24 horas):\n\n${url}\n\nSi no creaste esta cuenta, ignorá este mensaje.`,
     html: `<p>¡Hola! Confirmá tu cuenta abriendo este enlace (vence en 24 horas):</p><p><a href="${url}">Confirmar mi cuenta</a></p><p>Si no creaste esta cuenta, ignorá este mensaje.</p>`,
   };
@@ -76,7 +75,7 @@ export function resetEmail(
 ): Pick<EmailMessage, 'subject' | 'text' | 'html'> {
   const url = `${appUrl}/nueva-clave?token=${encodeURIComponent(token)}`;
   return {
-    subject: 'Recuperá tu acceso a Mesa',
+    subject: 'Recuperá tu acceso a Truquito',
     text: `Pediste recuperar tu acceso. Elegí una nueva clave aquí (vence en 1 hora):\n\n${url}\n\nSi no fuiste vos, ignorá este mensaje.`,
     html: `<p>Pediste recuperar tu acceso. Elegí una nueva clave aquí (vence en 1 hora):</p><p><a href="${url}">Elegir nueva clave</a></p><p>Si no fuiste vos, ignorá este mensaje.</p>`,
   };

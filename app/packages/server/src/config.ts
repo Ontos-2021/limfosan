@@ -99,7 +99,7 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): AppConfig {
     adminEmail: (env['ADMIN_EMAIL'] ?? '').trim().toLowerCase(),
     adminBootstrapCode: (env['ADMIN_BOOTSTRAP_CODE'] ?? '').trim(),
     emailProvider: env['RESEND_API_KEY'] ? 'resend' : 'log',
-    emailFrom: env['EMAIL_FROM'] ?? 'Mesa <hola@ejemplo.local>',
+    emailFrom: env['EMAIL_FROM'] ?? 'Truquito <hola@ejemplo.local>',
     resendApiKey: env['RESEND_API_KEY'] ?? '',
     turnPlaySeconds: parseIntEnv(
       env['TURN_PLAY_SECONDS'],

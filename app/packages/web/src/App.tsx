@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, type ReactNode } from 'react';
 import AccountDialog from './AccountDialog';
 import Lobby from './Lobby';
 import LocalTable from './LocalTable';
@@ -66,7 +66,7 @@ function VerifyScreen({
           </p>
           {state !== 'working' && (
             <button className="button button-primary" onClick={onDone}>
-              Ir a la mesa
+              Ir a jugar
             </button>
           )}
         </div>
@@ -100,7 +100,7 @@ function ResetScreen({ token, onDone }: { token: string; onDone: () => void }) {
             <>
               <p role="status">Listo. Iniciá sesión con tu nueva clave.</p>
               <button className="button button-primary" onClick={onDone}>
-                Ir a la mesa
+                Ir a jugar
               </button>
             </>
           ) : (
@@ -130,6 +130,72 @@ function ResetScreen({ token, onDone }: { token: string; onDone: () => void }) {
         </div>
       </section>
     </main>
+  );
+}
+
+function LegalScreen({
+  title,
+  children,
+}: {
+  title: string;
+  children: ReactNode;
+}) {
+  return (
+    <main className="game-layout">
+      <section className="game-column" aria-label={title}>
+        <div className="lobby-card">
+          <span className="eyebrow">TRUQUITO</span>
+          <h1>{title}</h1>
+          {children}
+          <div className="callout-actions">
+            <a className="button button-primary" href="/">
+              Ir a jugar
+            </a>
+          </div>
+        </div>
+      </section>
+    </main>
+  );
+}
+
+function Terminos() {
+  return (
+    <LegalScreen title="Términos">
+      <p>
+        Truquito es truco argentino 1 vs. 1: contra la CPU en este dispositivo o
+        en línea con un amigo por enlace privado.
+      </p>
+      <p>Sin apuestas ni premios. Sin chat libre: solo saludos predefinidos.</p>
+      <p>
+        Para crear una cuenta necesitás un código de invitación. El juego online
+        requiere conexión; si se corta, tu lugar se guarda unos segundos y la
+        partida puede darse por perdida si no volvés a tiempo.
+      </p>
+      <p>
+        Si alguien molesta, usá «Reportar un problema» en la mesa: lo revisa una
+        persona y puede terminar en bloqueo.
+      </p>
+    </LegalScreen>
+  );
+}
+
+function Privacidad() {
+  return (
+    <LegalScreen title="Privacidad">
+      <p>
+        Como invitado, tu historial vive en este navegador. Con cuenta guardamos
+        tu nombre visible, email y partidas en nuestro servidor para que puedas
+        volver y recuperar tu clave.
+      </p>
+      <p>
+        Nunca mostramos tus cartas al rival: el servidor solo le envía la
+        cantidad de cartas y lo ya jugado. Los reportes guardan el código de
+        mesa y el motivo que escribas; no agregues datos personales.
+      </p>
+      <p>
+        Sin publicidad ni venta de datos. Escribinos si querés borrar tu cuenta.
+      </p>
+    </LegalScreen>
   );
 }
 
@@ -164,6 +230,10 @@ function Shell() {
     else accountDialog.current?.close();
   }, [accountOpen]);
 
+  const path = window.location.pathname;
+  if (path === '/terminos') return <Terminos />;
+  if (path === '/privacidad') return <Privacidad />;
+
   function goOnline(code: string | null = null) {
     setMode('online');
     setOnlineCode(code);
@@ -190,11 +260,11 @@ function Shell() {
     <SkinProvider value={skin}>
       <div className="app-shell">
         <header className="site-header">
-          <a className="wordmark" href="/" aria-label="Mesa, inicio">
+          <a className="wordmark" href="/" aria-label="Truquito, inicio">
             <span className="brand-mark" aria-hidden="true">
-              m.
+              t.
             </span>
-            mesa<span className="brand-period">.</span>
+            truquito<span className="brand-period">.</span>
           </a>
           <span className="header-tagline">Las cartas nos juntan.</span>
           <div className="header-actions">
@@ -253,8 +323,9 @@ function Shell() {
         <footer className="site-footer">
           <span>Hecho para compartir una buena mano.</span>
           <span>
-            {mode === 'local' ? 'Local vs CPU' : 'En línea'} · Sin apuestas ·
-            Sin registro
+            {mode === 'local' ? 'Local vs CPU' : 'En línea'} · Sin apuestas ·{' '}
+            <a href="/terminos">Términos</a> ·{' '}
+            <a href="/privacidad">Privacidad</a>
           </span>
         </footer>
 
@@ -266,7 +337,7 @@ function Shell() {
           onClose={() => setHelpOpen(false)}
         >
           <div className="sheet-header">
-            <span className="eyebrow">MESA / TRUCO</span>
+            <span className="eyebrow">TRUQUITO / TRUCO</span>
             <button
               className="icon-button"
               aria-label="Cerrar"
@@ -275,7 +346,7 @@ function Shell() {
               ×
             </button>
           </div>
-          <h2 id="help-title">Un poco de cancha.</h2>
+          <h2 id="help-title">Cómo se juega.</h2>
           <HelpContent />
           <p className="help-disclaimer">
             {mode === 'local'
@@ -292,7 +363,7 @@ function Shell() {
           onClose={() => setAccountOpen(false)}
         >
           <div className="sheet-header">
-            <span className="eyebrow">MESA / CUENTA</span>
+            <span className="eyebrow">TRUQUITO / CUENTA</span>
             <button
               className="icon-button"
               aria-label="Cerrar"

@@ -44,7 +44,10 @@ export default function LocalTable({
   onGoOnline: () => void;
   onHelp: () => void;
 }) {
+  // En producción el reparto siempre es aleatorio: el parámetro ?seed=
+  // solo se respeta en desarrollo (sirve para reproducir partidas y tests).
   const seed = useMemo(() => {
+    if (import.meta.env.PROD) return Date.now() % 2147483647;
     const raw = new URLSearchParams(window.location.search).get('seed');
     const parsed = raw === null ? NaN : Number.parseInt(raw, 10);
     return Number.isInteger(parsed) ? parsed : Date.now() % 2147483647;
@@ -89,7 +92,7 @@ export default function LocalTable({
           !body ||
           typeof body !== 'object' ||
           !('app' in body) ||
-          body.app !== 'truco'
+          (body.app !== 'truquito' && body.app !== 'truco')
         ) {
           throw new Error('wrong application');
         }
@@ -234,12 +237,14 @@ export default function LocalTable({
               <span className="eyebrow">EL DE SIEMPRE, DONDE ESTÉS</span>
               <h1>Un buen truco.</h1>
             </div>
-            <button
-              className="text-button scenario-button"
-              onClick={() => setPanel('scenarios')}
-            >
-              Explorar estados <span aria-hidden="true">↗</span>
-            </button>
+            {!import.meta.env.PROD && (
+              <button
+                className="text-button scenario-button"
+                onClick={() => setPanel('scenarios')}
+              >
+                Explorar estados <span aria-hidden="true">↗</span>
+              </button>
+            )}
           </div>
 
           <Scoreboard
@@ -299,7 +304,7 @@ export default function LocalTable({
                 onRaise={(kind) => act({ type: kind })}
               />
             )}
-            {uiMode === 'reconnect' && (
+            {uiMode === 'reconnect' && !import.meta.env.PROD && (
               <div className="table-overlay">
                 <div className="callout">
                   <span className="connection-glyph" aria-hidden="true">
@@ -488,20 +493,24 @@ export default function LocalTable({
           <section className="demo-note">
             <span className="demo-label">PARTIDA LOCAL</span>
             <p>
-              Jugás contra la CPU en este dispositivo, con el reglamento v1.
-              Todavía no hay juego en red ni cuentas.
+              Jugás contra la CPU en este dispositivo, con el reglamento
+              completo: 40 cartas, a 30 puntos y sin flor.
             </p>
             <p className="backend-status">{backend}</p>
             <button className="text-button" onClick={onGoOnline}>
               Jugar online con un amigo <span aria-hidden="true">↗</span>
             </button>
-            <br />
-            <button
-              className="text-button"
-              onClick={() => setPanel('scenarios')}
-            >
-              Ver estados de la mesa
-            </button>
+            {!import.meta.env.PROD && (
+              <>
+                <br />
+                <button
+                  className="text-button"
+                  onClick={() => setPanel('scenarios')}
+                >
+                  Ver estados de la mesa
+                </button>
+              </>
+            )}
           </section>
         </aside>
       </main>
@@ -513,7 +522,7 @@ export default function LocalTable({
         onClose={() => setPanel(null)}
       >
         <div className="sheet-header">
-          <span className="eyebrow">MESA / TRUCO</span>
+          <span className="eyebrow">TRUQUITO / TRUCO</span>
           <button
             className="icon-button"
             aria-label="Cerrar"

@@ -81,7 +81,7 @@ export function verifyTotp(
 export function totpAuthUrl(
   secret: string,
   account: string,
-  issuer = 'Mesa-Truco',
+  issuer = 'Truquito',
 ): string {
   const label = encodeURIComponent(`${issuer}:${account}`);
   return `otpauth://totp/${label}?secret=${secret}&issuer=${encodeURIComponent(issuer)}&digits=6&period=30`;

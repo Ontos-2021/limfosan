@@ -190,7 +190,7 @@ export function attachRooms(
         }
         const parsed = CommandSchema.safeParse(payload);
         if (!parsed.success) {
-          ack({ ok: false, error: 'Comando inválido.' });
+          ack({ ok: false, error: 'Jugada no válida. Reintentá.' });
           return;
         }
         const outcome = await manager.applyCommand(
